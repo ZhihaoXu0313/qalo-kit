@@ -8,6 +8,7 @@ from dwave.system import LeapHybridSampler, DWaveSampler, FixedEmbeddingComposit
 import dimod
 from dimod import BinaryQuadraticModel
 from dwave_qbsolv import QBSolv 
+import math
 
 import networkx as nx 
 import minorminer
@@ -90,6 +91,15 @@ class hamiltonian:
                     for l in range(self.nsites):
                         self.H += Q[i * self.nsites + j, k * self.nsites + l] * self.x[i, j] * self.x[k, l]
                         
+    def add_entropy(self, temperature):
+        R = 5.189e19 * self.nsites / 6.02e23 # J/K/mol * total_mol --> eV/K
+        entropy_conf = 0
+        
+        for i in range(self.nspecies):
+            frac_composition = sum(self.x[i, :]) / self.nsites
+            entropy_conf -= R * frac_composition * math.log(frac_composition)
+        self.H -= temperature * entropy_conf
+    
     def apply_constraints(self, composition, mode, scale):
         K1 = self.M if mode == 'tight' else self.M * scale
         for i in range(self.nspecies):
@@ -119,13 +129,14 @@ class hamiltonian:
             
 
 class annealer:
-    def __init__(self, nspecies, nsites, placeholder, fmpath, composition, annealer_type, mode, ks):
+    def __init__(self, nspecies, nsites, temperature, placeholder, fmpath, composition, annealer_type, mode, ks):
         self.nspecies = nspecies
         self.nsites = nsites
         self.placeholder = placeholder
         
         self.hQubo = hamiltonian(nspecies, nsites)
         self.hQubo.construct_hamiltonian(os.path.join(fmpath, "model.txt"))
+        self.hQubo.add_entropy(temperature=temperature)
         self.hQubo.apply_constraints(composition, mode, ks)
         self.hQubo.compile_hamiltonian()
         

@@ -81,6 +81,7 @@ class qalorun(arguments):
             k = growth_rate ** (1 - i / self.qa_mix_circle)
             annealer_loose = annealer(nspecies=self.nspecies, 
                                       nsites=self.nsites, 
+                                      temperature=self.temperature,
                                       placeholder=self.qa_constr, 
                                       fmpath=self.fm_directory, 
                                       composition=self.composition, 
@@ -156,8 +157,8 @@ class qalorun(arguments):
         ffmModel = xl.create_ffm()
         for i in tqdm(range(self.iterations)):
             self.fmtraining(ffmModel)
-            self.annealing()
-            self.labeling()
+            energy_solution, structuredf = self.annealing()
+            self.labeling(energy_solution, structuredf)
         print("Finished")
         
         
