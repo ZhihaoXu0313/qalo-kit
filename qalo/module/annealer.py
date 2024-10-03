@@ -94,10 +94,10 @@ class hamiltonian:
     def add_entropy(self, temperature):
         R = 5.189e19 * self.nsites / 6.02e23 # J/K/mol * total_mol --> eV/K
         entropy_conf = 0
-        
+        eqatomic_comp = 1 / self.nspecies
         for i in range(self.nspecies):
             frac_composition = sum(self.x[i, :]) / self.nsites
-            entropy_conf -= R * frac_composition * math.log(frac_composition)
+            entropy_conf -= R*(eqatomic_comp*math.log(eqatomic_comp)+(1+math.log(eqatomic_comp))*(frac_composition-eqatomic_comp)+(self.nspecies/2)*(frac_composition-eqatomic_comp)^2)
         self.H -= temperature * entropy_conf
     
     def apply_constraints(self, composition, mode, scale):
