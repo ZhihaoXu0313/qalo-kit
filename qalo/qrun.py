@@ -16,7 +16,7 @@ class qalorun(arguments):
         self.Nx, self.Ny, self.Nz = self.spc_size[0], self.spc_size[1], self.spc_size[2]
         self.nspecies = len(self.elements)
         self.nsites = int(len(self.unit_site)) * self.Nx * self.Ny * self.Nz
-        
+        self.init_composition = [int(len(self.unit_site) * self.spc_size[0] * self.spc_size[1] * self.spc_size[2] * r) for r in self.init_composition_ratio]
         self.composition = self.init_composition
         
         self.fm_params = {'task': 'reg', 

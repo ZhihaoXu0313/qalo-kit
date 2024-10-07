@@ -11,7 +11,6 @@ class arguments:
         self.unit_site = [[0, 0, 0], [0.5, 0.5, 0.5]]
         self.alat = 3.29
         self.temperature = 300
-        self.init_composition = [int(len(self.unit_site) * self.spc_size[0] * self.spc_size[1] * self.spc_size[2] * r) for r in self.init_composition_ratio]
         
         # work directory
         self.working_directory = os.getcwd()
